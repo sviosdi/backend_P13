@@ -2,20 +2,20 @@ import User from '../database/models/userModel.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
-const createUser = async (dataFromService) => {
+const createUser = async (dataFromRequest) => {
     try {
-        const user = await User.findOne({ email: dataFromService.email })
+        const user = await User.findOne({ email: dataFromRequest.email })
         if (user) {
             throw new Error('Email already exists')
         }
 
-        const hashPassword = await bcrypt.hash(dataFromService.password, 12)
+        const hashPassword = await bcrypt.hash(dataFromRequest.password, 12)
 
         const newUser = new User({
-            email: dataFromService.email,
+            email: dataFromRequest.email,
             password: hashPassword,
-            firstName: dataFromService.firstName,
-            lastName: dataFromService.lastName,
+            firstName: dataFromRequest.firstName,
+            lastName: dataFromRequest.lastName,
         })
 
         /* ici newUser = valeur instancée de User = valeur retournée par save()
@@ -38,9 +38,9 @@ const createUser = async (dataFromService) => {
     }
 }
 
-const getUserProfile = async (serviceData) => {
+const getUserProfile = async (dataFromRequest) => {
     try {
-        const jwtToken = serviceData.headers.authorization
+        const jwtToken = dataFromRequest.headers.authorization
             .split('Bearer')[1]
             .trim()
         const decodedJwtToken = jwt.decode(jwtToken)
@@ -57,16 +57,16 @@ const getUserProfile = async (serviceData) => {
     }
 }
 
-const loginUser = async (serviceData) => {
+const loginUser = async (dataFromRequest) => {
     try {
-        const user = await User.findOne({ email: serviceData.email })
+        const user = await User.findOne({ email: dataFromRequest.email })
 
         if (!user) {
             throw new Error('User not found!')
         }
 
         const isValid = await bcrypt.compare(
-            serviceData.password,
+            dataFromRequest.password,
             user.password
         )
 
@@ -87,17 +87,17 @@ const loginUser = async (serviceData) => {
     }
 }
 
-const updateUserProfile = async (serviceData) => {
+const updateUserProfile = async (dataFromRequest) => {
     try {
-        const jwtToken = serviceData.headers.authorization
+        const jwtToken = dataFromRequest.headers.authorization
             .split('Bearer')[1]
             .trim()
         const decodedJwtToken = jwt.decode(jwtToken)
         const user = await User.findOneAndUpdate(
             { _id: decodedJwtToken.id },
             {
-                firstName: serviceData.body.firstName,
-                lastName: serviceData.body.lastName,
+                firstName: dataFromRequest.body.firstName,
+                lastName: dataFromRequest.body.lastName,
             },
             { new: true }
         )

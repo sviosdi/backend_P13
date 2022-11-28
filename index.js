@@ -1,3 +1,5 @@
+// Fichier à SUPPRIMER - Pour tester
+
 import connect from './database/connection.js'
 
 import { createUser, createTransaction } from './services/userServices.js'

@@ -17,6 +17,7 @@
   },
   "scripts": {
     "server": "node ./server.js",
-    "populate-db": "node ./scripts/populateDatabase.js"
+    "populate-db": "node ./scripts/populateDatabase.js",
+    "populate-transacs": "node ./scripts/populateTransactions.js"
   }
 }
