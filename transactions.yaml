@@ -1,0 +1,256 @@
+openapi: 3.0.3
+info:
+    title: Argent Bank API documentation - Transactions part
+    description: |-
+        This is the API documentation for the Argent Bank server. It describes all the endpoints exposed to an authenticated user to be able to perform CRUD operations on transactions on one of his 3 accounts: 'checking', 'saving' or 'card'.
+
+        An implementation of the server and this file source code can be found here:
+        - [source code the Argent Back Server](https://github.com/sviosdi/backend_P13)
+        - [yaml source file for the Argent Bank Server API definition - Transaction part ](https://github.com/swagger-api/swagger-petstore/blob/master/src/main/resources/openapi.yaml)
+    contact:
+        email: sviosdi@yandex.ru
+    license:
+        name: Apache 2.0
+        url: http://www.apache.org/licenses/LICENSE-2.0.html
+    version: 1.0.0
+externalDocs:
+    description: Find out more about Swagger
+    url: http://swagger.io
+servers:
+    - url: http://localhost:3002/api/v1
+tags:
+    - name: transactions
+      description: All CRUD operations on one of the tree accouts _checking_, _saving_ or _card_ of an authenticated user.
+paths:
+    /transactions/create:
+        post:
+            tags:
+                - transactions
+            summary: Create a new transaction (not part of the API)
+            description: This endpoint **should not be part** of the API.<br> It is provided here just to expose the structure of a transaction in the database. Users **must not be able to create transactions**. They only should have read access and update access [only one some fields]<br>Only certain approved and verified initiators should be able to initiate a _create_ transaction.<br> For demonstration purpose, the server implementation won't make any verification on the initiator and will allow every request to create a new transaction.<br> The _owner_ parameter must be a valid _id_ of an existant user.
+            operationId: createTransaction
+            requestBody:
+                description: Create a new transaction on the account _type_ specified in the body request
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Transaction'
+                    application/xml:
+                        schema:
+                            $ref: '#/components/schemas/Transaction'
+                    application/x-www-form-urlencoded:
+                        schema:
+                            $ref: '#/components/schemas/Transaction'
+                required: true
+            responses:
+                '200':
+                    description: Successful creation of the transaction
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TransactionResp200'
+                        application/xml:
+                            schema:
+                                $ref: '#/components/schemas/TransactionResp200'
+                '400':
+                    description: The creation of the transaction failed
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TransactionResp400'
+                        application/xml:
+                            schema:
+                                $ref: '#/components/schemas/TransactionResp400'
+    /transactions/getall:
+        post:
+            tags:
+                - transactions
+            summary: Get all transactions on the specified account
+            description: Get all transactions from the account _type_ specified as parameter for the authenticated user.<br> We don't have to pass the id of the user as a parameter as this id will be obtained from the JWT token in the header.
+            operationId: getTransactions
+            requestBody:
+                description: We just have to pass the _type_ of account
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Transactions'
+                    application/xml:
+                        schema:
+                            $ref: '#/components/schemas/Transactions'
+            security:
+                - bearerAuth: []
+            responses:
+                '200':
+                    description: The transactions were sucessfully retrieved as an array in the body field
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TransactionsResp200'
+                        application/xml:
+                            schema:
+                                $ref: '#/components/schemas/TransactionsResp200'
+                '400':
+                    description: Failed to return transactions on the specified account
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TransactionsResp400'
+                        application/xml:
+                            schema:
+                                $ref: '#/components/schemas/TransactionResp400'
+
+components:
+    schemas:
+        Transaction:
+            required: [type, description, initiator, owner, balance, amount]
+            type: object
+            properties:
+                type:
+                    type: string
+                    enum: [checking, saving, card]
+                    example: 'checking'
+                description:
+                    type: string
+                    example: "Online Jeff's PCShop"
+                initiator:
+                    type: string
+                    example: 'Secure-verified-service-dep:a&32-0450-37'
+                owner:
+                    type: string
+                    example: '63811b4e48fd83bf5013edbd'
+                balance:
+                    type: number
+                    example: 36.70
+                amount:
+                    type: number
+                    example: 451.20
+                category:
+                    type: string
+                    default: ''
+                notes:
+                    type: string
+                    default: ''
+                date:
+                    type: string
+                    format: date
+                    example: '2022-11-19T14:34:16'
+                transaction_type:
+                    type: string
+                    enum: [Withdrawal, Electronic]
+                    example: 'Withdrawal'
+
+        TransactionResp200:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    example: 200
+                message:
+                    type: string
+                    example: 'Transaction successfully created'
+                body:
+                    type: object
+                    properties:
+                        _id:
+                            type: string
+                            example: '6387c30da02b3e0ba178a9fb'
+                        owner:
+                            type: string
+                            enum:
+                                [
+                                    '63811b4e48fd83bf5013edbd',
+                                    '63811b4e48fd83bf5013edbb',
+                                ]
+                            example: '63811b4e48fd83bf5013edbd'
+                        owner_firstname:
+                            type: string
+                            example: 'Steve'
+                        owner_lastname:
+                            type: string
+                            example: 'Rogers'
+                        description:
+                            type: string
+                            example: "Online Jeff's PCShop"
+                        amount:
+                            type: string
+                            example: 451.20
+
+        TransactionResp400:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    example: 400
+                message:
+                    type: string
+                    example: 'Something went wrong in the server with /transactions/create in transactionController.js'
+                more:
+                    type: string
+                    example: "Error: Cannot create transaction: no such user concerned or the selected account is not of type 'checking' or 'saving' or 'card'"
+
+        Transactions:
+            type: object
+            properties:
+                type:
+                    type: string
+                    enum: [checking, saving, card]
+                    example: 'checking'
+
+        TransactionsResp200:
+            type: object
+            properties:
+                status:
+                    type: number
+                    example: 200
+                message:
+                    type: string
+                    example: 'Sucessfully got the transactions'
+                body:
+                    type: array
+                    items:
+                        type: object
+                    example:
+                        [
+                            {
+                                '_id': '63873f44692e5a8fdb9e9ac1',
+                                'date': '2022-11-29T15:33:40.000Z',
+                                'description': 'Argent Bank',
+                                'amount': 150,
+                                'balance': 251.39999999999998,
+                                'transaction_type': 'withdrawal',
+                                'category': 'c1',
+                                'notes': 'retrait pour payer le loyer en espèces',
+                                'createdAt': '2022-11-30T11:32:20.675Z',
+                                'updatedAt': '2022-11-30T14:17:34.345Z',
+                            },
+                            {
+                                '_id': '63873f44692e5a8fdb9e9abf',
+                                'date': '2022-11-27T14:30:35.000Z',
+                                'description': 'Garage AD',
+                                'amount': 88.9,
+                                'balance': 401.4,
+                                'transaction_type': 'Electronic',
+                                'category': '',
+                                'notes': '',
+                                'createdAt': '2022-11-30T11:32:20.670Z',
+                                'updatedAt': '2022-11-30T11:32:20.670Z',
+                            },
+                        ]
+
+        TransactionsResp400:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    example: 400
+                message:
+                    type: string
+                    example: 'Something went wrong in the server with /transactions/getall in transactionsController.js'
+                more:
+                    type: string
+                    example: 'Error: Cannot get transactions: the selected account is not of type "checking" or "saving" or "card"'
+    securitySchemes:
+        bearerAuth:
+            type: http
+            scheme: bearer
+            bearerFormat: JWT

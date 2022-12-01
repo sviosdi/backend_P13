@@ -13,6 +13,7 @@ const createTransacs = (idx) => {
     const transacs = []
     for (const i in T) {
         const t = { ...T[i] }
+        t.type = 'checking'
         let newBalance = startBalance[idx] - amounts[idx][i]
         t.balance = startBalance[idx] - amounts[idx][i]
         startBalance[idx] = newBalance
@@ -60,20 +61,20 @@ const T = [
 const owners = ['63811b4e48fd83bf5013edbd', '63811b4e48fd83bf5013edbb'] // [steve, tony]
 // steve
 const tokens = [
-    // steve
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODExYjRlNDhmZDgzYmY1MDEzZWRiZCIsImlhdCI6MTY2OTU4MDkwOSwiZXhwIjoxNjY5NjY3MzA5fQ.DAukG4511A8hen-q-sAqwT2li8K5VgKEQ9B4HZ4EHZY',
-    // tony
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODExYjRlNDhmZDgzYmY1MDEzZWRiYiIsImlhdCI6MTY2OTU4MTAxMSwiZXhwIjoxNjY5NjY3NDExfQ.pTBs0Onmqa-C3p-oqOOfXRNO7LMPx095oTLGlU5gwms',
+    // steve , tony
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODExYjRlNDhmZDgzYmY1MDEzZWRiZCIsImlhdCI6MTY2OTgwNzA4NiwiZXhwIjoxNjY5ODkzNDg2fQ.T2ISgdcstd8DDw7T5gRfCAtDVbIRh0O-0fy2Os5g3gg', // tony
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODExYjRlNDhmZDgzYmY1MDEzZWRiYiIsImlhdCI6MTY2OTgwNzAxMSwiZXhwIjoxNjY5ODkzNDExfQ.Fz1MB0SUFXzS8fmEC6ZqDXI-ox2btducIRcv0KirtMQ',
 ]
 
 const transacs = [createTransacs(0), createTransacs(1)]
 
-console.log(transacs)
+//.log(transacs)
 
 transacs.forEach((transac, idx) => {
     const config = { headers: { Authorization: `Bearer ${tokens[idx]}` } }
 
     transac.forEach((tr) => {
+        console.log(tr)
         axios
             .post(createApi, tr, config)
             .then((response) => console.log(response.data.body))
