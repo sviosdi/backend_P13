@@ -1,6 +1,7 @@
 import axios from 'axios'
 
-const createApi = 'http://localhost:3001/api/v1/transactions/create'
+const createApi =
+    'https://qu8rc9-3001.preview.csb.app/api/v1/transactions/create'
 
 const amounts = [
     [51.2, 30.2, 450, 89.3, 256.21, 145.3, 200.0],
@@ -21,6 +22,7 @@ const createTransacs = (idx) => {
         t.date = new Date(
             `2022-11-${17 + i * 2}T${10 + i * 1}:${15 + i * 3}:${10 + 5 * i}`
         )
+        console.log(idx, ':', owners[idx])
         t.owner = owners[idx]
         transacs.push(t)
     }
@@ -58,12 +60,12 @@ const T = [
     },
 ]
 
-const owners = ['63811b4e48fd83bf5013edbd', '63811b4e48fd83bf5013edbb'] // [steve, tony]
+const owners = ['6388f39096dec31bef84f5cd', '6388f38f96dec31bef84f5cb'] // [steve, tony]
 // steve
 const tokens = [
     // steve , tony
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODExYjRlNDhmZDgzYmY1MDEzZWRiZCIsImlhdCI6MTY2OTgwNzA4NiwiZXhwIjoxNjY5ODkzNDg2fQ.T2ISgdcstd8DDw7T5gRfCAtDVbIRh0O-0fy2Os5g3gg', // tony
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODExYjRlNDhmZDgzYmY1MDEzZWRiYiIsImlhdCI6MTY2OTgwNzAxMSwiZXhwIjoxNjY5ODkzNDExfQ.Fz1MB0SUFXzS8fmEC6ZqDXI-ox2btducIRcv0KirtMQ',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODhmMzkwOTZkZWMzMWJlZjg0ZjVjZCIsImlhdCI6MTY2OTkyMjg0NiwiZXhwIjoxNjcwMDA5MjQ2fQ.trTSL_1aPcokC98gfLKBLFK1jphk_y-GIU09XcJRyP0',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzODhmMzhmOTZkZWMzMWJlZjg0ZjVjYiIsImlhdCI6MTY2OTkyMjcwNSwiZXhwIjoxNjcwMDA5MTA1fQ.LcW9c7CpV93ZzBI15BZujJ3--pLebvY416rzu17lwnE',
 ]
 
 const transacs = [createTransacs(0), createTransacs(1)]
@@ -77,7 +79,9 @@ transacs.forEach((transac, idx) => {
         console.log(tr)
         axios
             .post(createApi, tr, config)
-            .then((response) => console.log(response.data.body))
+            .then((response) => {
+                console.log(response.status)
+            })
             .catch((error) => console.log('something went wrong'))
     })
 })

@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 
 const databaseUrl =
-    process.env.DATABASE_URL || 'mongodb://localhost/argentBankDB'
+    process.env.DATABASE_URL || 'mongodb://localhost/argentBankDB' //'mongodb+srv://userP13:argentbank@cluster0.zgji7.mongodb.net/argentBankDB?retryWrites=true&w=majority'
 
 export default async () => {
     try {
